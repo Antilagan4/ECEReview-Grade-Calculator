@@ -4,35 +4,74 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Weighted Grade Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f4f6f9;
+      --bg: #f8fafc;
+      --bg-accent: #eef2ff;
       --card: #ffffff;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-soft: #eef2ff;
       --danger: #ef4444;
-      --success: #16a34a;
-      --warning: #d97706;
-      --text: #1e293b;
+      --danger-soft: #fef2f2;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text: #0f172a;
       --muted: #64748b;
       --border: #e2e8f0;
+      --row-hover: #f8fafc;
       --row-highlight: #f1f5f9;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-accent: #1e1b4b;
+      --card: #111827;
+      --primary: #6366f1;
+      --primary-hover: #818cf8;
+      --primary-soft: rgba(99, 102, 241, 0.15);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.15);
+      --success: #34d399;
+      --warning: #fbbf24;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #1e293b;
+      --row-hover: #1e293b;
+      --row-highlight: #162032;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     }
 
     * {
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     body {
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 2rem 1rem;
+      padding: 0 1rem 4rem 1rem;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* Top Gradient Accent Bar */
+    .top-bar {
+      height: 5px;
+      background: linear-gradient(90deg, #4f46e5, #06b6d4, #10b981);
+      margin: 0 -1rem 2rem -1rem;
     }
 
     .container {
-      max-width: 920px;
+      max-width: 960px;
       margin: 0 auto;
     }
 
@@ -45,67 +84,221 @@
       margin-bottom: 1.5rem;
     }
 
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.25rem;
+      box-shadow: var(--shadow-md);
+    }
+
     h1 {
       margin: 0;
-      font-size: 1.75rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 2px;
+      display: block;
     }
 
     .header-actions {
       display: flex;
       gap: 0.5rem;
+      align-items: center;
     }
 
     button {
       cursor: pointer;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 0.55rem 1rem;
       font-weight: 600;
-      font-size: 0.9rem;
-      transition: background 0.15s;
+      font-size: 0.875rem;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
     .btn-primary {
       background: var(--primary);
       color: white;
+      box-shadow: var(--shadow-sm);
     }
     .btn-primary:hover {
       background: var(--primary-hover);
+      transform: translateY(-1px);
     }
 
     .btn-outline {
-      background: white;
+      background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
     }
     .btn-outline:hover {
-      background: #f8fafc;
+      background: var(--row-hover);
+      border-color: var(--muted);
     }
 
-    .btn-danger {
+    .btn-icon {
+      padding: 0.55rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .btn-danger-ghost {
       background: transparent;
-      color: var(--danger);
-      padding: 0.35rem 0.6rem;
-      font-size: 1.1rem;
+      color: var(--muted);
+      padding: 0.35rem 0.55rem;
+      border-radius: 6px;
     }
-    .btn-danger:hover {
-      background: #fee2e2;
+    .btn-danger-ghost:hover {
+      background: var(--danger-soft);
+      color: var(--danger);
     }
 
-    /* Summary Banner */
+    /* Tabs Navigation */
+    .tabs-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid transparent;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .tab-btn:hover {
+      background: var(--row-hover);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border-color: rgba(79, 70, 229, 0.25);
+    }
+
+    .tab-close {
+      margin-left: 0.4rem;
+      font-size: 1rem;
+      opacity: 0.6;
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+    .tab-close:hover {
+      opacity: 1;
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .btn-add-tab {
+      background: transparent;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      padding: 0.55rem 0.9rem;
+      white-space: nowrap;
+    }
+    .btn-add-tab:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    /* Scoreboard Card */
     .summary-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.25rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow-lg);
       position: sticky;
       top: 1rem;
-      z-index: 10;
+      z-index: 20;
+    }
+
+    .summary-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tab-title-edit {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-name-input {
+      font-size: 1rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      width: 220px;
+    }
+    .tab-name-input:hover, .tab-name-input:focus {
+      border-color: var(--border);
+      background: var(--bg);
+      outline: none;
+    }
+
+    .combine-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      background: var(--bg);
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
     }
 
     .stat-box {
@@ -114,24 +307,43 @@
     }
 
     .stat-label {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--muted);
       font-weight: 700;
     }
 
     .stat-value {
-      font-size: 1.9rem;
+      font-size: 1.85rem;
       font-weight: 800;
-      margin-top: 0.25rem;
+      margin-top: 0.2rem;
+      letter-spacing: -0.02em;
     }
 
     .stat-subtext {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--muted);
-      margin-top: 0.25rem;
+      margin-top: 0.2rem;
       font-weight: 500;
+    }
+
+    /* Progress Bar */
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      margin-top: 1.15rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4f46e5, #06b6d4);
+      border-radius: 999px;
+      transition: width 0.3s ease, background 0.3s ease;
     }
 
     .weight-ok { color: var(--success); }
@@ -142,10 +354,11 @@
     .category-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
+      border-radius: 14px;
+      padding: 1.35rem;
       margin-bottom: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      box-shadow: var(--shadow-md);
+      transition: transform 0.15s ease;
     }
 
     .category-header {
@@ -159,22 +372,26 @@
     }
 
     .category-title-input {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       border: 1px solid transparent;
-      border-radius: 6px;
-      padding: 0.35rem 0.5rem;
+      border-radius: 8px;
+      padding: 0.4rem 0.6rem;
       color: var(--text);
       background: transparent;
       width: 100%;
-      max-width: 320px;
+      max-width: 340px;
     }
 
     .category-title-input:hover,
     .category-title-input:focus {
       border-color: var(--border);
-      background: #f8fafc;
+      background: var(--bg);
       outline: none;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
     }
 
     table {
@@ -184,19 +401,33 @@
 
     th {
       text-align: left;
-      font-size: 0.78rem;
+      font-size: 0.73rem;
       text-transform: uppercase;
+      letter-spacing: 0.04em;
       color: var(--muted);
-      padding: 0.5rem;
+      padding: 0.6rem 0.5rem;
       border-bottom: 1px solid var(--border);
     }
 
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: var(--row-hover);
+    }
+
     td {
-      padding: 0.5rem;
+      padding: 0.55rem 0.5rem;
       vertical-align: middle;
     }
 
-    /* Section Total Row Styling */
+    /* Section Total Footer Row */
     tfoot tr {
       background-color: var(--row-highlight);
       border-top: 2px solid var(--border);
@@ -204,9 +435,17 @@
     }
 
     tfoot td {
-      padding: 0.75rem 0.5rem;
+      padding: 0.8rem 0.5rem;
       color: var(--text);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+    }
+
+    tfoot td:first-child {
+      border-bottom-left-radius: 8px;
+    }
+
+    tfoot td:last-child {
+      border-bottom-right-radius: 8px;
     }
 
     .section-total-earned {
@@ -217,70 +456,99 @@
     input[type="text"],
     input[type="number"] {
       width: 100%;
-      padding: 0.5rem;
+      padding: 0.5rem 0.65rem;
       border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
+      border-radius: 8px;
+      font-size: 0.92rem;
       color: var(--text);
+      background: var(--card);
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
     input:focus {
       outline: none;
       border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
     }
 
-    .earned-cell {
-      font-weight: 700;
+    .earned-badge {
+      display: inline-block;
+      background: var(--primary-soft);
       color: var(--primary);
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
       white-space: nowrap;
     }
 
     .card-footer {
-      margin-top: 0.85rem;
+      margin-top: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    @media (max-width: 640px) {
-      .hide-mobile {
-        display: none;
-      }
     }
   </style>
 </head>
 <body>
 
+<div class="top-bar"></div>
+
 <div class="container">
   <header>
-    <div>
-      <h1>Weighted Grade Calculator</h1>
-      <small style="color: var(--muted);">Click any title, subject, score, or weight to customize</small>
+    <div class="brand">
+      <div class="brand-icon">%</div>
+      <div>
+        <h1>Grade Calculator</h1>
+        <span class="subtitle">Customizable weighted scoring & multi-sheet tracker</span>
+      </div>
     </div>
     <div class="header-actions">
+      <button class="btn-icon" id="theme-toggle" title="Toggle Dark Mode" onclick="toggleTheme()">🌙</button>
       <button class="btn-outline" onclick="resetToDefault()">Reset Default</button>
       <button class="btn-primary" onclick="addCategory()">+ Add Section</button>
     </div>
   </header>
 
+  <!-- Tabs Bar -->
+  <div class="tabs-wrapper" id="tabs-bar"></div>
+
   <!-- Live Scoreboard -->
   <div class="summary-card">
-    <div class="stat-box">
-      <span class="stat-label">Total Weighted Points</span>
-      <span class="stat-value" id="total-points" style="color: var(--primary);">0.00 / 100</span>
-      <span class="stat-subtext">Overall accumulated points</span>
+    <div class="summary-top">
+      <div class="tab-title-edit">
+        <span style="font-size: 0.85rem; color: var(--muted);">Sheet Name:</span>
+        <input type="text" class="tab-name-input" id="active-tab-name" oninput="renameActiveTab(this.value)" />
+      </div>
+
+      <label class="combine-toggle" title="Sum points across all open tabs">
+        <input type="checkbox" id="combine-tabs-checkbox" onchange="toggleCombineMode(this.checked)" />
+        <span>Combine All Tabs</span>
+      </label>
     </div>
 
-    <div class="stat-box">
-      <span class="stat-label">Final Percentage Grade</span>
-      <span class="stat-value" id="total-grade">0.00%</span>
-      <span class="stat-subtext">Equivalent percentage</span>
+    <div class="summary-grid">
+      <div class="stat-box">
+        <span class="stat-label" id="points-label">Total Weighted Points</span>
+        <span class="stat-value" id="total-points" style="color: var(--primary);">0.00 / 100</span>
+        <span class="stat-subtext" id="points-subtext">Current sheet accumulated points</span>
+      </div>
+
+      <div class="stat-box">
+        <span class="stat-label">Percentage Score</span>
+        <span class="stat-value" id="total-grade">0.00%</span>
+        <span class="stat-subtext">Based on earned weight</span>
+      </div>
+
+      <div class="stat-box">
+        <span class="stat-label">Total Weight Allocated</span>
+        <span class="stat-value" id="total-weight">100%</span>
+        <span class="stat-subtext" id="weight-status"></span>
+      </div>
     </div>
 
-    <div class="stat-box">
-      <span class="stat-label">Total Weight Allocated</span>
-      <span class="stat-value" id="total-weight">100%</span>
-      <span class="stat-subtext" id="weight-status"></span>
+    <div class="progress-track">
+      <div class="progress-fill" id="grade-progress-bar"></div>
     </div>
   </div>
 
@@ -289,42 +557,162 @@
 </div>
 
 <script>
-  const defaultData = [
+  const defaultTabs = [
     {
-      id: 1,
-      name: "GRADED TASKS",
-      items: [
-        { id: 101, subject: "Elex 1", score: "", max: 60, weight: 6 },
-        { id: 102, subject: "Elex 2", score: "", max: 60, weight: 6 },
-        { id: 103, subject: "Math 1", score: "", max: 40, weight: 8 },
-        { id: 104, subject: "Est 1",  score: "", max: 60, weight: 6 },
-        { id: 105, subject: "Est 2",  score: "", max: 60, weight: 6 },
-        { id: 106, subject: "Geas 1", score: "", max: 80, weight: 8 }
-      ]
-    },
-    {
-      id: 2,
-      name: "FINALS",
-      items: [
-        { id: 201, subject: "Elex", score: "", max: 90, weight: 18 },
-        { id: 202, subject: "Math", score: "", max: 50, weight: 12 },
-        { id: 203, subject: "Est",  score: "", max: 90, weight: 18 },
-        { id: 204, subject: "Geas", score: "", max: 80, weight: 12 }
+      id: "tab-1",
+      name: "ECE Review Main",
+      categories: [
+        {
+          id: 1,
+          name: "GRADED TASKS",
+          items: [
+            { id: 101, subject: "Elex 1", score: "", max: 60, weight: 6 },
+            { id: 102, subject: "Elex 2", score: "", max: 60, weight: 6 },
+            { id: 103, subject: "Math 1", score: "", max: 40, weight: 8 },
+            { id: 104, subject: "Est 1",  score: "", max: 60, weight: 6 },
+            { id: 105, subject: "Est 2",  score: "", max: 60, weight: 6 },
+            { id: 106, subject: "Geas 1", score: "", max: 80, weight: 8 }
+          ]
+        },
+        {
+          id: 2,
+          name: "FINALS",
+          items: [
+            { id: 201, subject: "Elex", score: "", max: 90, weight: 18 },
+            { id: 202, subject: "Math", score: "", max: 50, weight: 12 },
+            { id: 203, subject: "Est",  score: "", max: 90, weight: 18 },
+            { id: 204, subject: "Geas", score: "", max: 80, weight: 12 }
+          ]
+        }
       ]
     }
   ];
 
-  let categories = JSON.parse(localStorage.getItem("gradeCalcData")) || structuredClone(defaultData);
+  let appState = JSON.parse(localStorage.getItem("gradeCalcMultiTab")) || {
+    activeTabId: "tab-1",
+    combineAll: false,
+    tabs: structuredClone(defaultTabs)
+  };
+
+  // Theme initialization
+  const savedTheme = localStorage.getItem("gradeCalcTheme") || "light";
+  if (savedTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+    document.getElementById("theme-toggle").textContent = "☀️";
+  }
+
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    if (isDark) {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("gradeCalcTheme", "light");
+      document.getElementById("theme-toggle").textContent = "🌙";
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("gradeCalcTheme", "dark");
+      document.getElementById("theme-toggle").textContent = "☀️";
+    }
+  }
 
   function saveData() {
-    localStorage.setItem("gradeCalcData", JSON.stringify(categories));
+    localStorage.setItem("gradeCalcMultiTab", JSON.stringify(appState));
+  }
+
+  function getActiveTab() {
+    return appState.tabs.find(t => t.id === appState.activeTabId) || appState.tabs[0];
+  }
+
+  function switchTab(tabId) {
+    appState.activeTabId = tabId;
+    saveData();
+    render();
+  }
+
+  function addNewTab() {
+    const newId = "tab-" + Date.now();
+    const tabNumber = appState.tabs.length + 1;
+    appState.tabs.push({
+      id: newId,
+      name: `Extra Subjects #${tabNumber - 1}`,
+      categories: [
+        {
+          id: Date.now() + 1,
+          name: "ADDITIONAL SUBJECTS",
+          items: [
+            { id: Date.now() + 2, subject: "New Subject 1", score: "", max: 50, weight: 10 },
+            { id: Date.now() + 3, subject: "New Subject 2", score: "", max: 50, weight: 10 }
+          ]
+        }
+      ]
+    });
+    appState.activeTabId = newId;
+    saveData();
+    render();
+  }
+
+  function removeTab(event, tabId) {
+    event.stopPropagation();
+    if (appState.tabs.length <= 1) {
+      alert("You must have at least one tab open.");
+      return;
+    }
+    if (confirm("Delete this tab and all its subjects?")) {
+      appState.tabs = appState.tabs.filter(t => t.id !== tabId);
+      if (appState.activeTabId === tabId) {
+        appState.activeTabId = appState.tabs[0].id;
+      }
+      saveData();
+      render();
+    }
+  }
+
+  function renameActiveTab(newName) {
+    const tab = getActiveTab();
+    tab.name = newName || "Untitled Sheet";
+    saveData();
+    renderTabs();
+  }
+
+  function toggleCombineMode(checked) {
+    appState.combineAll = checked;
+    saveData();
+    recalculateTotals();
+  }
+
+  function renderTabs() {
+    const tabsBar = document.getElementById("tabs-bar");
+    tabsBar.innerHTML = "";
+
+    appState.tabs.forEach(tab => {
+      const btn = document.createElement("button");
+      btn.className = `tab-btn ${tab.id === appState.activeTabId ? "active" : ""}`;
+      btn.onclick = () => switchTab(tab.id);
+
+      const closeHtml = appState.tabs.length > 1
+        ? `<span class="tab-close" title="Close Tab" onclick="removeTab(event, '${tab.id}')">&times;</span>`
+        : "";
+
+      btn.innerHTML = `${escapeHtml(tab.name)} ${closeHtml}`;
+      tabsBar.appendChild(btn);
+    });
+
+    const addBtn = document.createElement("button");
+    addBtn.className = "btn-add-tab";
+    addBtn.textContent = "+ New Tab";
+    addBtn.onclick = addNewTab;
+    tabsBar.appendChild(addBtn);
   }
 
   function render() {
+    renderTabs();
+    const activeTab = getActiveTab();
+    document.getElementById("active-tab-name").value = activeTab.name;
+    document.getElementById("combine-tabs-checkbox").checked = appState.combineAll;
+
     const container = document.getElementById("categories-container");
     container.innerHTML = "";
 
-    categories.forEach((cat, catIndex) => {
+    activeTab.categories.forEach((cat, catIndex) => {
       const card = document.createElement("div");
       card.className = "category-card";
 
@@ -366,11 +754,13 @@
                 placeholder="Weight"
                 oninput="updateItem(${catIndex}, ${itemIndex}, 'weight', this.value)" />
             </td>
-            <td class="earned-cell" style="width: 14%;" id="earned-${catIndex}-${itemIndex}">
-              ${earned.toFixed(2)} pts
+            <td style="width: 14%;">
+              <span class="earned-badge" id="earned-${catIndex}-${itemIndex}">
+                ${earned.toFixed(2)} pts
+              </span>
             </td>
             <td style="width: 5%; text-align: right;">
-              <button class="btn-danger" title="Remove Item"
+              <button class="btn-danger-ghost" title="Remove Item"
                 onclick="removeItem(${catIndex}, ${itemIndex})">&times;</button>
             </td>
           </tr>
@@ -381,35 +771,37 @@
         <div class="category-header">
           <input class="category-title-input" type="text" value="${escapeHtml(cat.name)}"
             oninput="updateCategoryName(${catIndex}, this.value)" />
-          <button class="btn-danger" title="Delete Section"
+          <button class="btn-danger-ghost" title="Delete Section"
             onclick="removeCategory(${catIndex})">Delete Section</button>
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Subject / Item</th>
-              <th>Your Score</th>
-              <th>Total Items</th>
-              <th>Weight (pts)</th>
-              <th>Weighted Pts</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="3">SECTION TOTAL</td>
-              <td id="cat-weight-total-${catIndex}">${catWeight} pts</td>
-              <td class="section-total-earned" id="cat-earned-total-${catIndex}">
-                ${catEarned.toFixed(2)} / ${catWeight}
-              </td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Subject / Item</th>
+                <th>Your Score</th>
+                <th>Total Items</th>
+                <th>Weight (pts)</th>
+                <th>Weighted Pts</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">SECTION TOTAL</td>
+                <td id="cat-weight-total-${catIndex}">${catWeight} pts</td>
+                <td class="section-total-earned" id="cat-earned-total-${catIndex}">
+                  ${catEarned.toFixed(2)} / ${catWeight}
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
 
         <div class="card-footer">
           <button class="btn-outline" onclick="addItem(${catIndex})">+ Add Subject / Item</button>
@@ -423,18 +815,21 @@
   }
 
   function updateItem(catIndex, itemIndex, field, value) {
-    categories[catIndex].items[itemIndex][field] = value;
+    const activeTab = getActiveTab();
+    activeTab.categories[catIndex].items[itemIndex][field] = value;
     saveData();
     recalculateTotals();
   }
 
   function updateCategoryName(catIndex, value) {
-    categories[catIndex].name = value;
+    const activeTab = getActiveTab();
+    activeTab.categories[catIndex].name = value;
     saveData();
   }
 
   function addItem(catIndex) {
-    categories[catIndex].items.push({
+    const activeTab = getActiveTab();
+    activeTab.categories[catIndex].items.push({
       id: Date.now(),
       subject: "New Subject",
       score: "",
@@ -446,13 +841,15 @@
   }
 
   function removeItem(catIndex, itemIndex) {
-    categories[catIndex].items.splice(itemIndex, 1);
+    const activeTab = getActiveTab();
+    activeTab.categories[catIndex].items.splice(itemIndex, 1);
     saveData();
     render();
   }
 
   function addCategory() {
-    categories.push({
+    const activeTab = getActiveTab();
+    activeTab.categories.push({
       id: Date.now(),
       name: "NEW SECTION",
       items: [
@@ -464,26 +861,51 @@
   }
 
   function removeCategory(catIndex) {
+    const activeTab = getActiveTab();
     if (confirm("Remove this entire section?")) {
-      categories.splice(catIndex, 1);
+      activeTab.categories.splice(catIndex, 1);
       saveData();
       render();
     }
   }
 
   function resetToDefault() {
-    if (confirm("Reset all subjects, weights, and scores back to the default template?")) {
-      categories = structuredClone(defaultData);
+    if (confirm("Reset everything back to the original ECE Review template?")) {
+      appState = {
+        activeTabId: "tab-1",
+        combineAll: false,
+        tabs: structuredClone(defaultTabs)
+      };
       saveData();
       render();
     }
   }
 
-  function recalculateTotals() {
-    let grandGrade = 0;
-    let grandWeight = 0;
+  function calculateTabTotals(tab) {
+    let tabEarned = 0;
+    let tabWeight = 0;
 
-    categories.forEach((cat, catIndex) => {
+    tab.categories.forEach(cat => {
+      cat.items.forEach(item => {
+        const score = parseFloat(item.score);
+        const max = parseFloat(item.max);
+        const weight = parseFloat(item.weight) || 0;
+
+        if (!isNaN(score) && max > 0) {
+          tabEarned += (score / max) * weight;
+        }
+        tabWeight += weight;
+      });
+    });
+
+    return { earned: tabEarned, weight: tabWeight };
+  }
+
+  function recalculateTotals() {
+    const activeTab = getActiveTab();
+
+    // Update active tab DOM rows & section footers
+    activeTab.categories.forEach((cat, catIndex) => {
       let catEarned = 0;
       let catWeight = 0;
 
@@ -509,31 +931,55 @@
 
       if (catWeightEl) catWeightEl.textContent = `${catWeight} pts`;
       if (catEarnedEl) catEarnedEl.textContent = `${catEarned.toFixed(2)} / ${catWeight}`;
-
-      grandGrade += catEarned;
-      grandWeight += catWeight;
     });
 
-    // Update Top Scoreboard
-    document.getElementById("total-points").textContent = `${grandGrade.toFixed(2)} / 100`;
-    document.getElementById("total-grade").textContent = `${grandGrade.toFixed(2)}%`;
+    // Calculate Scoreboard Totals (either active tab or combined across all tabs)
+    let displayEarned = 0;
+    let displayWeight = 0;
+
+    if (appState.combineAll) {
+      appState.tabs.forEach(tab => {
+        const res = calculateTabTotals(tab);
+        displayEarned += res.earned;
+        displayWeight += res.weight;
+      });
+      document.getElementById("points-label").textContent = "Combined Weighted Points";
+      document.getElementById("points-subtext").textContent = `Combined across ${appState.tabs.length} tabs`;
+    } else {
+      const res = calculateTabTotals(activeTab);
+      displayEarned = res.earned;
+      displayWeight = res.weight;
+      document.getElementById("points-label").textContent = "Total Weighted Points";
+      document.getElementById("points-subtext").textContent = `Points in "${activeTab.name}"`;
+    }
+
+    const maxScale = displayWeight > 0 ? displayWeight : 100;
+    const percentage = displayWeight > 0 ? (displayEarned / displayWeight) * 100 : 0;
+
+    document.getElementById("total-points").textContent = `${displayEarned.toFixed(2)} / ${maxScale}`;
+    document.getElementById("total-grade").textContent = `${percentage.toFixed(2)}%`;
+
+    // Progress Bar Update
+    const progressEl = document.getElementById("grade-progress-bar");
+    const clampedPct = Math.min(100, Math.max(0, percentage));
+    progressEl.style.width = `${clampedPct}%`;
 
     const weightEl = document.getElementById("total-weight");
     const statusEl = document.getElementById("weight-status");
-    weightEl.textContent = `${grandWeight}%`;
+    weightEl.textContent = `${displayWeight}%`;
 
     weightEl.className = "stat-value";
-    if (Math.abs(grandWeight - 100) < 0.001) {
+    if (Math.abs(displayWeight - 100) < 0.001) {
       weightEl.classList.add("weight-ok");
       statusEl.textContent = "Balanced at 100%";
       statusEl.style.color = "var(--success)";
-    } else if (grandWeight < 100) {
+    } else if (displayWeight < 100) {
       weightEl.classList.add("weight-warn");
-      statusEl.textContent = `${(100 - grandWeight).toFixed(2)}% remaining to reach 100%`;
+      statusEl.textContent = `${(100 - displayWeight).toFixed(2)}% remaining to reach 100%`;
       statusEl.style.color = "var(--warning)";
     } else {
       weightEl.classList.add("weight-over");
-      statusEl.textContent = `${(grandWeight - 100).toFixed(2)}% over 100%`;
+      statusEl.textContent = `${(displayWeight - 100).toFixed(2)}% over 100%`;
       statusEl.style.color = "var(--danger)";
     }
   }
