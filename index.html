@@ -16,6 +16,7 @@
       --text: #1e293b;
       --muted: #64748b;
       --border: #e2e8f0;
+      --row-highlight: #f1f5f9;
     }
 
     * {
@@ -31,7 +32,7 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 920px;
       margin: 0 auto;
     }
 
@@ -99,8 +100,8 @@
       padding: 1.5rem;
       margin-bottom: 1.5rem;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       position: sticky;
       top: 1rem;
@@ -113,17 +114,24 @@
     }
 
     .stat-label {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--muted);
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .stat-value {
-      font-size: 2rem;
+      font-size: 1.9rem;
       font-weight: 800;
       margin-top: 0.25rem;
+    }
+
+    .stat-subtext {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+      font-weight: 500;
     }
 
     .weight-ok { color: var(--success); }
@@ -169,13 +177,6 @@
       outline: none;
     }
 
-    .category-subtotal {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
     table {
       width: 100%;
       border-collapse: collapse;
@@ -193,6 +194,24 @@
     td {
       padding: 0.5rem;
       vertical-align: middle;
+    }
+
+    /* Section Total Row Styling */
+    tfoot tr {
+      background-color: var(--row-highlight);
+      border-top: 2px solid var(--border);
+      font-weight: 700;
+    }
+
+    tfoot td {
+      padding: 0.75rem 0.5rem;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .section-total-earned {
+      color: var(--primary);
+      font-weight: 800;
     }
 
     input[type="text"],
@@ -217,14 +236,14 @@
     }
 
     .card-footer {
-      margin-top: 0.75rem;
+      margin-top: 0.85rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     @media (max-width: 640px) {
-      th:nth-child(4), td:nth-child(4) {
+      .hide-mobile {
         display: none;
       }
     }
@@ -247,13 +266,21 @@
   <!-- Live Scoreboard -->
   <div class="summary-card">
     <div class="stat-box">
-      <span class="stat-label">Current Total Grade</span>
-      <span class="stat-value" id="total-grade">0.00%</span>
+      <span class="stat-label">Total Weighted Points</span>
+      <span class="stat-value" id="total-points" style="color: var(--primary);">0.00 / 100</span>
+      <span class="stat-subtext">Overall accumulated points</span>
     </div>
+
+    <div class="stat-box">
+      <span class="stat-label">Final Percentage Grade</span>
+      <span class="stat-value" id="total-grade">0.00%</span>
+      <span class="stat-subtext">Equivalent percentage</span>
+    </div>
+
     <div class="stat-box">
       <span class="stat-label">Total Weight Allocated</span>
       <span class="stat-value" id="total-weight">100%</span>
-      <small id="weight-status" style="margin-top: 4px; font-weight: 500;"></small>
+      <span class="stat-subtext" id="weight-status"></span>
     </div>
   </div>
 
@@ -262,7 +289,6 @@
 </div>
 
 <script>
-  // Default template matching your exact example
   const defaultData = [
     {
       id: 1,
@@ -288,7 +314,6 @@
     }
   ];
 
-  // Load saved data from browser localStorage or fall back to default
   let categories = JSON.parse(localStorage.getItem("gradeCalcData")) || structuredClone(defaultData);
 
   function saveData() {
@@ -303,7 +328,6 @@
       const card = document.createElement("div");
       card.className = "category-card";
 
-      // Calculate category totals
       let catWeight = 0;
       let catEarned = 0;
 
@@ -327,23 +351,23 @@
                 placeholder="Subject Name"
                 oninput="updateItem(${catIndex}, ${itemIndex}, 'subject', this.value)" />
             </td>
-            <td style="width: 18%;">
+            <td style="width: 17%;">
               <input type="number" step="any" min="0" value="${item.score}"
                 placeholder="Score"
                 oninput="updateItem(${catIndex}, ${itemIndex}, 'score', this.value)" />
             </td>
-            <td style="width: 18%;">
+            <td style="width: 17%;">
               <input type="number" step="any" min="1" value="${item.max}"
                 placeholder="Max"
                 oninput="updateItem(${catIndex}, ${itemIndex}, 'max', this.value)" />
             </td>
-            <td style="width: 18%;">
+            <td style="width: 17%;">
               <input type="number" step="any" min="0" value="${item.weight}"
-                placeholder="Weight %"
+                placeholder="Weight"
                 oninput="updateItem(${catIndex}, ${itemIndex}, 'weight', this.value)" />
             </td>
-            <td class="earned-cell" style="width: 11%;" id="earned-${catIndex}-${itemIndex}">
-              ${earned.toFixed(2)}%
+            <td class="earned-cell" style="width: 14%;" id="earned-${catIndex}-${itemIndex}">
+              ${earned.toFixed(2)} pts
             </td>
             <td style="width: 5%; text-align: right;">
               <button class="btn-danger" title="Remove Item"
@@ -357,13 +381,8 @@
         <div class="category-header">
           <input class="category-title-input" type="text" value="${escapeHtml(cat.name)}"
             oninput="updateCategoryName(${catIndex}, this.value)" />
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="category-subtotal" id="cat-sub-${catIndex}">
-              Earned: ${catEarned.toFixed(2)}% / ${catWeight}%
-            </span>
-            <button class="btn-danger" title="Delete Section"
-              onclick="removeCategory(${catIndex})">Delete</button>
-          </div>
+          <button class="btn-danger" title="Delete Section"
+            onclick="removeCategory(${catIndex})">Delete Section</button>
         </div>
 
         <table>
@@ -372,14 +391,24 @@
               <th>Subject / Item</th>
               <th>Your Score</th>
               <th>Total Items</th>
-              <th>Weight (%)</th>
-              <th>Earned</th>
+              <th>Weight (pts)</th>
+              <th>Weighted Pts</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             ${rowsHtml}
           </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">SECTION TOTAL</td>
+              <td id="cat-weight-total-${catIndex}">${catWeight} pts</td>
+              <td class="section-total-earned" id="cat-earned-total-${catIndex}">
+                ${catEarned.toFixed(2)} / ${catWeight}
+              </td>
+              <td></td>
+            </tr>
+          </tfoot>
         </table>
 
         <div class="card-footer">
@@ -472,18 +501,21 @@
         catWeight += weight;
 
         const earnedEl = document.getElementById(`earned-${catIndex}-${itemIndex}`);
-        if (earnedEl) earnedEl.textContent = `${earned.toFixed(2)}%`;
+        if (earnedEl) earnedEl.textContent = `${earned.toFixed(2)} pts`;
       });
 
-      const catSubEl = document.getElementById(`cat-sub-${catIndex}`);
-      if (catSubEl) {
-        catSubEl.textContent = `Earned: ${catEarned.toFixed(2)}% / ${catWeight}%`;
-      }
+      const catWeightEl = document.getElementById(`cat-weight-total-${catIndex}`);
+      const catEarnedEl = document.getElementById(`cat-earned-total-${catIndex}`);
+
+      if (catWeightEl) catWeightEl.textContent = `${catWeight} pts`;
+      if (catEarnedEl) catEarnedEl.textContent = `${catEarned.toFixed(2)} / ${catWeight}`;
 
       grandGrade += catEarned;
       grandWeight += catWeight;
     });
 
+    // Update Top Scoreboard
+    document.getElementById("total-points").textContent = `${grandGrade.toFixed(2)} / 100`;
     document.getElementById("total-grade").textContent = `${grandGrade.toFixed(2)}%`;
 
     const weightEl = document.getElementById("total-weight");
@@ -514,7 +546,6 @@
       .replace(/"/g, "&quot;");
   }
 
-  // Initial render
   render();
 </script>
 
